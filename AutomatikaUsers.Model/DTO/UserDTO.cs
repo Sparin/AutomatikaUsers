@@ -7,7 +7,7 @@ namespace AutomatikaUsers.Model.DTO
 {
     public class UserDTO
     {
-        public ulong Id { get; set; }
+        public int Id { get; set; }
         public string IdentityName { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }

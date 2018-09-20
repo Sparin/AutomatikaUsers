@@ -43,15 +43,23 @@ namespace AutomatikaUsers.Controllers
         // GET api/<controller>/5
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public ActionResult GetUser(ulong id)
+        public ActionResult GetUser(int id)
         {
-            var result = _userService.GetUser(id);
-            return Json(result);
+            try
+            {
+                var result = _userService.GetUser(id);
+                return Json(result);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]UserDTO user)
+        public ActionResult AddUser([FromBody]UserDTO user)
         {
             try
             {
@@ -64,9 +72,9 @@ namespace AutomatikaUsers.Controllers
             }
         }
 
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public ActionResult Put([FromBody]UserDTO user)
+        // PUT api/<controller>
+        [HttpPut]
+        public ActionResult UpdateUser([FromBody]UserDTO user)
         {
             try
             {
@@ -81,9 +89,41 @@ namespace AutomatikaUsers.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(ulong id)
+        public ActionResult RemoveUser(int id)
         {
             _userService.RemoveUser(id);
+            return NoContent();
+        }
+
+        // POST api/<controller>/addSoftware
+        [HttpPost("addSoftwareLink")]
+        public ActionResult AddSoftwareLink([FromQuery]int userId, [FromQuery] int softwareId)
+        {
+            try
+            {
+                _userService.AddSoftwareLink(userId, softwareId);
+                return StatusCode(201);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("removeSoftwareLink")]
+        public ActionResult RemoveSoftwareLink([FromQuery]int userId, [FromQuery] int softwareId)
+        {
+            try
+            {
+                _userService.RemoveSoftwareLink(userId, softwareId);
+                return StatusCode(201);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

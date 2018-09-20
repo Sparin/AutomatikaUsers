@@ -30,10 +30,8 @@ namespace AutomatikaUsers
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            //TODO: Replace on MS SQL Server
             //TODO: Test all functionality on MS SQL Server
-            services.AddDbContext<UserContext>(options => options.UseSqlite(Configuration.GetConnectionString("UsersConnection"),
+            services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString("UsersConnection"),
                 b => b.MigrationsAssembly("AutomatikaUsers")));
 
             services.AddScoped<IUserService, UserService>();
@@ -56,9 +54,25 @@ namespace AutomatikaUsers
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
+            } 
+            UpdateDatabase(app);
+
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvc();
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<UserContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

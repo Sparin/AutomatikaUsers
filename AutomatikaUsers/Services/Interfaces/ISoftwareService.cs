@@ -9,9 +9,9 @@ namespace AutomatikaUsers.Services.Interfaces
     public interface ISoftwareService
     {
         SoftwareDTO AddSoftware(SoftwareDTO software);
-        SoftwareDTO GetSoftware(ulong softwareId);
-        IEnumerable<SoftwareDTO> GetSoftware(int page);
+        SoftwareDTO GetSoftware(int softwareId);
+        IEnumerable<SoftwareDTO> GetSoftwares(int page);
         SoftwareDTO UpdateSoftware(SoftwareDTO software);
-        void RemoveSoftware(ulong softwareId);
+        void RemoveSoftware(int softwareId);
     }
 }

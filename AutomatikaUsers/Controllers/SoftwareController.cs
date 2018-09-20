@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutomatikaUsers.Contexts;
 using AutomatikaUsers.Model;
 using AutomatikaUsers.Model.DTO;
+using AutomatikaUsers.Services.Interfaces;
 using AutomatikaUsers.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,50 +21,76 @@ namespace AutomatikaUsers.Controllers
     [Route("api/[controller]")]
     public class SoftwareController : Controller
     {
-        private readonly UserContext _userContext;
+        private readonly ISoftwareService _softwareService;
         private readonly ILogger<SoftwareController> _logger;
 
-        public SoftwareController(UserContext userContext, ILoggerFactory loggerFactory)
+        public SoftwareController(ISoftwareService softwareService, ILoggerFactory loggerFactory)
         {
-            _userContext = userContext;
+            _softwareService = softwareService;
             _logger = loggerFactory.CreateLogger<SoftwareController>();
         }
 
         // GET: api/<controller>
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult GetSoftware(int page = 0)
+        public ActionResult GetSoftwares(int page = 0)
         {
-            throw new NotImplementedException();
+            return Json(_softwareService.GetSoftwares(page));
         }
 
         // GET api/<controller>/5
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public ActionResult GetSoftware(ulong id)
+        public ActionResult GetSoftware(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = _softwareService.GetSoftware(id);
+                return Json(result);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]Software software)
+        public ActionResult AddSoftware([FromBody]Software software)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Json(_softwareService.AddSoftware(software));
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public ActionResult Put(ulong id, [FromBody]Software softwareUpdated)
+        [HttpPut]
+        public ActionResult Put([FromBody]Software software)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Json(_softwareService.UpdateSoftware(software));
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning($"Request ended with wrong parameters\r\n{ex.Message}");
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(ulong id)
+        public ActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            _softwareService.RemoveSoftware(id);
+            return NoContent();
         }
     }
 }

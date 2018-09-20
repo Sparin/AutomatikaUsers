@@ -45,16 +45,19 @@ namespace AutomatikaUsers.Services
             return result;
         }
 
-        public SoftwareDTO GetSoftware(ulong softwareId)
+        public SoftwareDTO GetSoftware(int softwareId)
         {
-            return _userContext.Software
+            var software = _userContext.Software
                 .AsNoTracking()
                 .Include(x => x.Users)
                 .ThenInclude(x => x.User)
                 .SingleOrDefault(x => x.Id == softwareId);
+            if (software == null)
+                throw new ArgumentException("Software is not found");
+            return software;
         }
 
-        public IEnumerable<SoftwareDTO> GetSoftware(int page)
+        public IEnumerable<SoftwareDTO> GetSoftwares(int page)
         {
             return _userContext.Software
                 .AsNoTracking()
@@ -65,13 +68,16 @@ namespace AutomatikaUsers.Services
                 .Select(x => SoftwareDTO.FromModel(x));
         }
 
-        public void RemoveSoftware(ulong softwareId)
+        public void RemoveSoftware(int softwareId)
         {
             try
             {
                 var software = _userContext.Software.AsNoTracking().SingleOrDefault(x => x.Id == softwareId);
                 if (software == null)
                     return;
+
+                _userContext.Remove(software);
+                _userContext.SaveChanges();
             }
             catch (DbUpdateException dbEx)
             {
@@ -83,14 +89,14 @@ namespace AutomatikaUsers.Services
         public SoftwareDTO UpdateSoftware(SoftwareDTO software)
         {
             var dbSoftware = _userContext.Software.SingleOrDefault(x => x.Id == software.Id);
-            if (software == null)
-                throw new ArgumentNullException("User doesn't exists in database");
+            if (dbSoftware == null)
+                throw new ArgumentNullException("Software doesn't exists in database");
 
-            dbSoftware.Name = software.Name;
+            if (software.Name != null)
+                dbSoftware.Name = software.Name;
 
             try
             {
-                _userContext.Software.Update(dbSoftware);
                 _userContext.SaveChanges();
             }
             catch (DbUpdateException dbEx)

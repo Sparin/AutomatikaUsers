@@ -10,12 +10,12 @@ namespace AutomatikaUsers.Services.Interfaces
     {
         //CRUD Methods
         UserDTO AddUser(UserDTO user);
-        UserDTO GetUser(ulong userId);
+        UserDTO GetUser(int userId);
         IEnumerable<UserDTO> GetUsers(int page);
         UserDTO UpdateUser(UserDTO user);
-        void RemoveUser(ulong user);
+        void RemoveUser(int user);
 
-        void AddSoftwareLink(ulong userId, ulong softwareId);
-        void RemoveSoftwareLink(ulong userId, ulong softwareId);
+        void AddSoftwareLink(int userId, int softwareId);
+        void RemoveSoftwareLink(int userId, int softwareId);
     }
 }

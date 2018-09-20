@@ -43,13 +43,15 @@ namespace AutomatikaUsers.Services
             return result;
         }
 
-        public UserDTO GetUser(ulong userId)
+        public UserDTO GetUser(int userId)
         {
             var user = _userContext.Users
                 .AsNoTracking()
                 .Include(x => x.InstalledSoftware)
                 .ThenInclude(x => x.Software)
                 .SingleOrDefault(x => x.Id == userId);
+            if (user == null)
+                throw new ArgumentException("User is not found");
             return user;
         }
 
@@ -65,7 +67,7 @@ namespace AutomatikaUsers.Services
                 .ToList();
         }
 
-        public void RemoveUser(ulong userId)
+        public void RemoveUser(int userId)
         {
             try
             {
@@ -73,6 +75,8 @@ namespace AutomatikaUsers.Services
                 if (user == null)
                     return;
 
+                _userContext.Users.Remove(user);
+                _userContext.SaveChanges();
             }
             catch (DbUpdateException dbEx)
             {
@@ -87,13 +91,15 @@ namespace AutomatikaUsers.Services
             if (user == null)
                 throw new ArgumentNullException("User doesn't exists in database");
 
-            dbUser.Email = user.Email;
-            dbUser.FirstName = user.FirstName;
-            dbUser.LastName = user.LastName;
+            if (user.Email != null)
+                dbUser.Email = user.Email;
+            if (user.FirstName != null)
+                dbUser.FirstName = user.FirstName;
+            if (user.LastName != null)
+                dbUser.LastName = user.LastName;
 
             try
             {
-                _userContext.Users.Update(user);
                 _userContext.SaveChanges();
             }
             catch (DbUpdateException dbEx)
@@ -105,7 +111,7 @@ namespace AutomatikaUsers.Services
             return dbUser;
         }
 
-        public void RemoveSoftwareLink(ulong userId, ulong softwareId)
+        public void RemoveSoftwareLink(int userId, int softwareId)
         {
             try
             {
@@ -124,7 +130,7 @@ namespace AutomatikaUsers.Services
             }
         }
 
-        public void AddSoftwareLink(ulong userId, ulong softwareId)
+        public void AddSoftwareLink(int userId, int softwareId)
         {
             try
             {
