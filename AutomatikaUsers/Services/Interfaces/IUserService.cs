@@ -8,7 +8,6 @@ namespace AutomatikaUsers.Services.Interfaces
 {
     public interface IUserService
     {
-        //CRUD Methods
         UserDTO AddUser(UserDTO user);
         UserDTO GetUser(int userId);
         IEnumerable<UserDTO> GetUsers(int page);

@@ -26,7 +26,10 @@
         var uri = 'api/user';
 
         function formatInfo(item) {
-            return 'Hello, ' + item.identityName + '! You\'re authenticated: ' + item.isAuthenticated + '; Issuer: ' + item.issuer;
+            if (item.isAuthenticated)
+                return 'Hello, ' + item.identityName + '! You\'re authenticated: ' + item.isAuthenticated + '; Issuer: ' + item.issuer;
+            else
+                return "Unauthorized user. Read only access.";
         }
 
         $(document).ready(function () {
@@ -53,7 +56,10 @@
         //}
 
         function formatItem(item) {
-            return 'Id: ' + item.id + '  ---> Email: #' + item.email + '  ---> UserName: ' + item.identityName + '  ---> FirstName: ' + item.firstName + '  ---> LastName: ' + item.lastName + '  ---> Software count: ' + item.installedSoftware.length;
+            var count = 0;
+            if (item.installedSoftware != undefined)
+                count = item.installedSoftware.length;
+            return 'Id: ' + item.id + '  ---> Email: #' + item.email + '  ---> UserName: ' + item.identityName + '  ---> FirstName: ' + item.firstName + '  ---> LastName: ' + item.lastName + '  ---> Software count: ' + count;
         }
 
         function find() {
